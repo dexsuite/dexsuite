@@ -59,9 +59,9 @@ tool.
 To address the problem identified above, we'll manually remodel the collision mesh. There are
 several methods for this, such as using primitives like a box or sphere for collision
 representation, employing convex decomposition derived from the visual mesh, or even designing a
-more tailored solution. You may wish to understand more about convex decomposition from this post.
+more tailored solution.
 
-### Building a Collision Mesh: Single Primitive Approach
+### Building Collision Mesh: Single Primitive Approach
 
 Let's start with the base, corresponding to `base10.dae`.
 
@@ -99,14 +99,14 @@ Afterward, we can copy-paste the cylinder information into the URDF as illustrat
 load the modified URDF into your simulator, the collision mesh will now be represented by a
 simple cylinder.
 
-```xml
+```xml title="schunk_svh_hand_right.urdf"
 
 <link name="right_hand_base_link">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <visual>
         <origin rpy="0 0 0" xyz="0 0 -0.032"/>
         <geometry>
-            <mesh filename="meshes/visual/base10.obj"/>
+            <mesh filename="package://schunk_svh_description/meshes/base10.dae"/>
         </geometry>
     </visual>
     <collision>
@@ -126,7 +126,7 @@ yield identical results in simulation collision detection. However, for simplici
 using the `<cylinder>` tag.
 :::
 
-### Building a Collision Mesh: Multi Primitive Approach
+### Building Collision Mesh: Multi Primitive Approach
 
 Now, let's handle the palm, which corresponds to `h10.dae` and `h11.dae`. We'll begin with h10.
 This part has a more complex structure than the previous ones, and it appears that a single
@@ -157,7 +157,57 @@ often find that the design choices are heavily dependent on your manipulation ta
 model. Remember, the modeling process is always iterative: you build collision meshes and put them
 into a simulator to observe the outcomes. If something unexpected occurs, such as undesired
 self-collision, you should update your collision mesh design.
-
 When building models in DexSuite, we extensively
 use [simulation for motion checking](https://github.com/dexsuite/dex-urdf/blob/main/example/render_urdf_sapien.py)
 to enhance the modeling process.
+
+### Building Collision Mesh: Convex Mesh Approach
+
+Let's now address the collision of index finger, is related to the URDF
+links `right_hand_virtual_l`, `right_hand_l`, `right_hand_p`, and `right_hand_t`. We can
+model `right_hand_virtual_l` as a spherical primitive using the aforementioned method. For the other
+three meshes, we'll use **convex decomposition**.
+
+Convex meshes are highly favored in physical simulations. Primitives such as spheres, boxes,
+cylinders, and capsules are all convex. To transform non-convex visual meshes into convex ones, we
+employ a process known as convex decomposition. This technique involves deconstructing complex,
+non-convex shapes into several simpler, convex shapes. It is an algorithmic process, eliminating the
+need for manual labor. More details about convex decomposition can be found
+in [this article](https://simulately.wiki/docs/toolkits/ConvexDecomp).
+
+While primitives are ideal for efficient collision detection, they may not be the best
+representation for some robot links. Approximating these links with primitives could either use too
+many shapes or not accurately represent the actual link. This is especially true for links with
+frequent contacts, like fingertips, where the collision shape's alignment with the actual
+counterpart is crucial.
+
+The [CoACD](https://github.com/SarahWeiii/CoACD) tool is highly beneficial for performing convex
+decomposition. Here's a simple script to install CoACD and use it to generate decomposed meshes for
+the index finger links using default parameters:
+
+```shell
+pip3 install coacd
+coacd -i f11.obj -o f11_collision.obj
+coacd -i f12.obj -o f12_collision.obj
+coacd -i f13.obj -o f13_collision.obj
+```
+
+For simple meshes such as the collision mesh of
+an [XArm link](https://github.com/dexsuite/dex-urdf/tree/main/robots/arms/xarm7/meshes/collision),
+the default parameters work well. However, for `f11`, the default parameters produce overly complex
+convex meshes. In such cases, we could consider using a smaller decomposition resolution, denoted
+by `-t`. A larger value implies a lower granularity. More details on tuning these parameters can be
+found on the original [CoACD Github page](https://github.com/SarahWeiii/CoACD).
+
+```shell
+coacd -i f11.obj -o -t 0.1 f11_collision.obj
+```
+
+|  Original Visual Mesh   |   CoACD with Default Params   |     CoACD with `-t 0.1`      |
+|:-----------------------:|:-----------------------------:|:----------------------------:|
+| 1 SubMesh, 508 Vertices |  62 SubMeshes, 5083 Vertices  | 29 SubMeshes, 3025 Vertices  | 
+|   ![visual](f11.png)    | ![default convex](f11_62.png) | ![simple convex](f11_29.png) |
+
+We can apply a similar method to create convex decompositions for other finger links. While this
+might seem adequate, you might find that your URDF model is experiencing intensive self-collision,
+even in its resting pose. So, what's the issue? We'll delve into this in the following section.
