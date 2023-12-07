@@ -13,10 +13,11 @@ also obtain the models from our [Github Repository](https://github.com/dexsuite/
 
 ## Robot URDF Models
 
-|                  **Allegro Hand**                  |                **Shadow Hand**                |             **SCUUNK SVH**             |
-|:--------------------------------------------------:|:---------------------------------------------:|:--------------------------------------:|
-| [![allegro](animation/allegro_rt.webp)](./allegro) | [![shadow](animation/shadow_rt.webp)](shadow) | [![svh](animation/dclaw_rt.webp)](svh) |
-|                  **Ability Hand**                  |               **Barrett Hand**                |          **SCHUNK SVH Hand**           |
+|                  **Allegro Hand**                  |                 **Shadow Hand**                 |            **SCHUNK SVH Hand**            |
+|:--------------------------------------------------:|:-----------------------------------------------:|:-----------------------------------------:|
+| [![allegro](animation/allegro_rt.webp)](./allegro) | [![shadow](animation/shadow_rt.webp)](./shadow) | [![svh](animation/shadow_rt.webp)](./svh) |
+|                  **Ability Hand**                  |                **Barrett Hand**                 |             **DClaw Gripper**             |
+| [![ability](animation/ability_rt.webp)](./ability) | [![Barrett](animation/bhand_rt.webp)](./bhand)  | [![svh](animation/dclaw_rt.webp)](./svh)  |
 
 ### Why we need these robot models?
 

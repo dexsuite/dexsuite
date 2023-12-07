@@ -1,6 +1,6 @@
 ---
 slug: modeling-1
-title: Model Collision for Robots
+title: Model Collision for Robots I
 authors: [ yuzhe-qin ]
 tags: [ simulation, modeling ]
 ---
@@ -131,7 +131,8 @@ using the `<cylinder>` tag.
 Now, let's handle the palm, which corresponds to `h10.dae` and `h11.dae`. We'll begin with h10.
 This part has a more complex structure than the previous ones, and it appears that a single
 primitive cannot approximate it. Instead, we might need to use multiple primitives, such as three
-boxes.
+boxes. You do not need to worry that the overlapping between different boxes since the collision
+meshes of the same link will never collide each other.
 
 | Visual Mesh in Blender | Created Box Primitives in Blender |
 |:----------------------:|:---------------------------------:|
