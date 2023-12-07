@@ -1,0 +1,21 @@
+---
+sidebar_position: 3
+sidebar_label: 'Common Problem'
+---
+
+# Usage Consideration
+
+### IsaacGym
+
+The URDF provided in DexSuite utilizes either `.obj` or `.glb` files (for glb version URDF). To
+ensure proper functioning, it's crucial to set `flip_visual_attachment=False`. This tag modifies the
+up and forward axis as established in the mesh file, typically a `.dae` file. For our URDF model,
+this is unnecessary and enabling it could result in wrong mesh parsing behavior.
+
+```python
+from isaacgym import gymapi
+
+asset_option = gymapi.AssetOptions()
+asset_option.flip_visual_attachments = False
+```
+
